@@ -139,6 +139,7 @@ const getLogs = (params, callback) => {
         if (keyFormat.json) {
             try {
                 data = JSON.parse(data);
+                if (data.Records) { data = data.Records; }
                 return callback(null, Array.isArray(data) ? data.map(entry => JSON.stringify(entry)) : JSON.stringify(data));
             } catch (e) {
                 return callback(null, data.split('\n').map(line => line.trim()).filter((line) => {

@@ -1,6 +1,3 @@
-# No Package Lock
-package-lock.json
-
 # No Temporary File
 *.swp
 .DS_Store
@@ -14,3 +11,8 @@ node_modules
 # No Testing Materials
 data
 generateData.js
+
+# No TAP Artifacts
+.tap
+coverage
+.nyc_output

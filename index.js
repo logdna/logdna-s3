@@ -2,47 +2,36 @@
 
 const async = require('async')
 
-const config = require('./lib/config.js')
-const eventHandler = require('./lib/event-handler.js')
-const logger = require('./lib/logger.js')
-const transformer = require('./lib/transformer.js')
+const {getConfig} = require('./lib/config.js')
+const {handleEvent} = require('./lib/event-handler.js')
+const {flush} = require('./lib/logger.js')
+const {getLogs, prepareLogs} = require('./lib/transformer.js')
+const {batchify, getProperty} = require('./lib/utils.js')
 
 const BATCH_INTERVAL = parseInt(process.env.LOGDNA_BATCH_INTERVAL) || 50
+const BATCH_LIMIT = parseInt(process.env.LOGDNA_BATCH_LIMIT) || 25
 
-exports.handler = (event, context, callback) => {
-  const conf = config.getConfig(event)
-  , eventData = eventHandler.processEvent(eventHandler.parseEvent(event))
-  , payload = conf.eventlog ? [eventHandler.prepareEvent(eventData)] : []
+module.exports = {
+  handler
+}
 
-  let s3params = undefined
-  if (eventData && eventData.meta) {
-    s3params = {
-      Bucket: eventData.meta.bucket && eventData.meta.bucket.name || undefined
-    , Key: eventData.meta.object && eventData.meta.object.key || undefined
-    }
+function handler(event, context, callback) {
+  const config = getConfig(event)
+  const eventData = handleEvent(event)
+  const s3params = {
+    Bucket: getProperty(eventData, 'meta.bucket.name')
+  , Key: getProperty(eventData, 'meta.object.key')
   }
 
-  if (conf.filelog) {
-    return transformer.getLogs(s3params, (error, lines) => {
-      if (error) {
-        if (conf.eventlog) {
-          return logger.flush(payload, conf, callback)
-        }
+  return getLogs(s3params, (error, lines) => {
+    if (error) return callback(error)
 
-        return callback(error)
-      }
-
-      const logArrays = payload.concat(transformer.prepareLogs(lines, eventData))
-      const batches = transformer.batchify(logArrays)
-      return async.everySeries(batches, (batch, next) => {
-        setTimeout(() => {
-          return logger.flush(batch, config, next)
-        }, BATCH_INTERVAL)
-      }, callback)
-    })
-  } else if (!conf.eventlog) {
-    return callback('None of file and event logging has been enabled!')
-  }
-
-  return logger.flush(payload, conf, callback)
+    const logArrays = prepareLogs(lines, eventData)
+    const batches = batchify(logArrays, BATCH_LIMIT)
+    return async.everySeries(batches, (batch, next) => {
+      setTimeout(() => {
+        return flush(batch, config, next)
+      }, BATCH_INTERVAL)
+    }, callback)
+  })
 }

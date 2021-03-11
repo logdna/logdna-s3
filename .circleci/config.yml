@@ -12,14 +12,14 @@ test_build_filters: &test_build_filters
 jobs:
   test:
     docker:
-      - image: circleci/node:10
+      - image: circleci/node:12
     steps:
       - checkout
-      - run: npm install
-      - run: npm run lint
+      - run: npm ci
+      - run: npm run test
   build:
     docker:
-      - image: circleci/node:10
+      - image: circleci/node:12
     steps:
       - checkout
       - run:
@@ -35,8 +35,8 @@ jobs:
       - run:
           name: Build S3 Lambda
           command: |
-            npm install --production
-            zip logdna-s3.zip -r node_modules/ index.js package.json
+            npm ci --production
+            zip logdna-s3.zip -r node_modules/ index.js package-lock.json lib/*.js
       - persist_to_workspace:
           root: .
           paths:

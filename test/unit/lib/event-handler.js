@@ -55,6 +55,49 @@ test('handleEvent', async (t) => {
     }, 'should pass this event')
   })
 
+  t.test('event with invalid data', async (t) => {
+    const event = {
+      Records: [{
+        awsRegion: AWS_REGION
+      , eventSource: EVENT_SOURCE
+      , eventTime: BUCKET_NAME
+      , s3: {
+          bucket: {
+            arn: BUCKET_ARN
+          , name: BUCKET_NAME
+          , ownerIdentity: {
+              principalId: PRINCIPAL_ID
+            }
+          }
+        , object: {
+            key: FILE_NAME
+          }
+        }
+      , userIdentity: {
+          principalId: PRINCIPAL_ID
+        }
+      }]
+    }
+
+    t.match(handleEvent(event), {
+      file: `${BUCKET_NAME}/${FILE_NAME}`
+    , timestamp: /^[0-9]{13}$/
+    , meta: {
+        bucket: {
+          name: BUCKET_NAME
+        , owner: PRINCIPAL_ID
+        , arn: BUCKET_ARN
+        }
+      , object: {
+          key: FILE_NAME
+        }
+      , region: AWS_REGION
+      , source: EVENT_SOURCE
+      , user: PRINCIPAL_ID
+      }
+    }, 'fully parse full event')
+  })
+
   t.test('full perfect data', async (t) => {
     const event = {
       Records: [{
@@ -80,7 +123,7 @@ test('handleEvent', async (t) => {
     }
 
     t.deepEqual(handleEvent(event), {
-      file: `${BUCKET_NAME}/${decodeURIComponent(FILE_NAME.replace(/\+/g, ' '))}`
+      file: `${BUCKET_NAME}/${FILE_NAME}`
     , timestamp: TIMESTAMP
     , meta: {
         bucket: {
@@ -89,7 +132,7 @@ test('handleEvent', async (t) => {
         , arn: BUCKET_ARN
         }
       , object: {
-          key: decodeURIComponent(FILE_NAME.replace(/\+/g, ' '))
+          key: FILE_NAME
         }
       , region: AWS_REGION
       , source: EVENT_SOURCE

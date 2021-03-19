@@ -1,44 +1,30 @@
 ## Environment Variables
 
-### `BATCH_INTERVAL`
+### `FLUSH_INTERVAL`
 
-> The number of milliseconds between sending each batch
+> The number of milliseconds to wait between sending payloads to LogDNA
 
 | Config | Value |
 | --- | --- |
-| Name | `batch-interval` |
-| Environment Variable | `BATCH_INTERVAL` |
+| Name | `flush-interval` |
+| Environment Variable | `FLUSH_INTERVAL` |
 | Type | `number` |
 | Required | no |
-| Default | `50` |
+| Default | `1000` |
 
 ***
 
-### `BATCH_LIMIT`
+### `FLUSH_LIMIT`
 
-> The number of lines within each batch
+> If the length of the send buffer exceeds this length, send immediately
 
 | Config | Value |
 | --- | --- |
-| Name | `batch-limit` |
-| Environment Variable | `BATCH_LIMIT` |
+| Name | `flush-limit` |
+| Environment Variable | `FLUSH_LIMIT` |
 | Type | `number` |
 | Required | no |
 | Default | `25` |
-
-***
-
-### `FREE_SOCKET_TIMEOUT`
-
-> The number of milliseconds to wait for inactivity before timing out
-
-| Config | Value |
-| --- | --- |
-| Name | `free-socket-timeout` |
-| Environment Variable | `FREE_SOCKET_TIMEOUT` |
-| Type | `number` |
-| Required | no |
-| Default | `300000` |
 
 ***
 
@@ -140,34 +126,6 @@
 
 ***
 
-### `MAX_REQUEST_RETRIES`
-
-> Maximum number of retries for sending each batch
-
-| Config | Value |
-| --- | --- |
-| Name | `max-request-retries` |
-| Environment Variable | `MAX_REQUEST_RETRIES` |
-| Type | `number` |
-| Required | no |
-| Default | `5` |
-
-***
-
-### `MAX_REQUEST_TIMEOUT`
-
-> Maximum request timeout in sending each batch
-
-| Config | Value |
-| --- | --- |
-| Name | `max-request-timeout` |
-| Environment Variable | `MAX_REQUEST_TIMEOUT` |
-| Type | `number` |
-| Required | no |
-| Default | `300` |
-
-***
-
 ### `PROXY`
 
 > A full proxy URL (including protocol) to pass through before going to LogDNA
@@ -179,20 +137,6 @@
 | Type | `string` |
 | Required | no |
 | Default | `(none)` |
-
-***
-
-### `REQUEST_RETRY_INTERVAL`
-
-> The number of milliseconds between each retry
-
-| Config | Value |
-| --- | --- |
-| Name | `request-retry-interval` |
-| Environment Variable | `REQUEST_RETRY_INTERVAL` |
-| Type | `number` |
-| Required | no |
-| Default | `100` |
 
 ***
 
@@ -221,20 +165,6 @@
 | Type | `string` |
 | Required | no |
 | Default | `(none)` |
-
-***
-
-### `URL`
-
-> *Combination of SSL, INGESTION_HOST, INGESTION_PORT, and INGESTION_ENDPOINT*
-
-| Config | Value |
-| --- | --- |
-| Name | `url` |
-| Environment Variable | `URL` |
-| Type | `string` |
-| Required | no |
-| Default | `https://logs.logdna.com/logs/ingest` |
 
 ***
 

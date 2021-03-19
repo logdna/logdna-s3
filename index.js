@@ -1,50 +1,54 @@
 'use strict'
 
-const async = require('async')
+const {once} = require('events')
 
 const config = require('./lib/config.js')
 const {handleEvent} = require('./lib/event-handler.js')
-const {flush} = require('./lib/logger.js')
+const {createLoggerClient} = require('./lib/logger.js')
 const {getLogs, prepareLogs} = require('./lib/transformer.js')
-const {batchify, getProperty} = require('./lib/utils.js')
+const {getProperty, trimTags} = require('./lib/utils.js')
 
-const DOT_REGEXP = /\./g
+const HOSTNAME_REGEX = /[^0-9a-zA-Z\-.]/g
 
 module.exports = {
   handler
 }
 
-async function handler(event, context, callback) {
+async function handler(event, context) {
   config.validateEnvVars()
-  const tags = config.get('tags')
-  if (tags) {
-    config.set('tags', tags.split(',').map((tag) => {
-      return tag.trim()
-    }).join(','))
+  const eventData = handleEvent(event)
+  if (!eventData) {
+    const error = new Error('Cannot Parse the S3 Event')
+    error.meta = {event}
+    throw error
   }
 
-  const eventData = handleEvent(event)
   const s3params = {
     Bucket: getProperty(eventData, 'meta.bucket.name')
   , Key: getProperty(eventData, 'meta.object.key')
   }
 
-  let lines
-  try {
-    lines = getLogs(s3params)
-  } catch (e) {
-    return callback(e)
+  const tags = config.get('tags')
+  if (tags) {
+    config.set('tags', trimTags(tags))
   }
 
-  const logArrays = prepareLogs(lines, eventData)
-  const batches = batchify(logArrays, config.get('batch-limit'))
-  if (!config.get('hostname')) {
-    config.set('hostname', s3params.Bucket.replace(DOT_REGEXP, '_'))
+  const hostname = config.get('hostname') || s3params.Bucket
+  if (hostname) {
+    config.set('hostname', hostname.replace(HOSTNAME_REGEX, ''))
   }
 
-  async.everySeries(batches, (batch, next) => {
-    setTimeout(() => {
-      return flush(batch, config, next)
-    }, config.get('batch-interval'))
-  }, callback)
+  const logger = createLoggerClient(config)
+  const lines = await getLogs(s3params)
+  logger.on('error', console.error)
+  logger.on('warn', console.warn)
+  const logs = prepareLogs(lines, eventData)
+  for (const log of logs) {
+    const {line, opts} = log
+    logger.log(line, opts)
+  }
+
+  // Ensure logs have been flushed to LogDNA before finishing
+  await once(logger, 'cleared')
+  return
 }

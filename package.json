@@ -4,6 +4,7 @@
   "description": "Lambda Function to Stream Logs from AWS S3 to LogDNA",
   "main": "index.js",
   "scripts": {
+    "docs": "config-doc lib/config.js > doc/env.md",
     "lint": "eslint ./",
     "lint:fix": "npm run lint -- --fix",
     "pretest": "npm run lint",
@@ -45,10 +46,10 @@
     "files": [
       "test/unit"
     ],
-    "statements": 66,
-    "branches": 63,
-    "functions": 54,
-    "lines": 66
+    "statements": 73,
+    "branches": 88,
+    "functions": 59,
+    "lines": 71
   },
   "husky": {
     "hooks": {
@@ -56,6 +57,7 @@
     }
   },
   "dependencies": {
+    "@logdna/env-config": "^1.0.5",
     "agentkeepalive": "^4.0.2",
     "async": "^2.6.2",
     "request": "^2.88.0"

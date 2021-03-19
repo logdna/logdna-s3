@@ -599,6 +599,36 @@ test('getLogs', async (t) => {
       t.match(data, [{
         line: input
       , timestamp: /^[0-9]{13}$/
+      }], 'Zipped JSON success')
+      t.strictEqual(error, null, 'JSON.parse is clear')
+    })
+  })
+
+  t.test('where data is valid json', async (t) => {
+    const params = {
+      Bucket: SAMPLE_BUCKET
+    , Key: `${SAMPLE_OBJECT_KEY}.json`
+    }
+
+    const input = JSON.stringify({
+      log: LOG_LINE
+    })
+
+    const getObject = s3.getObject
+    s3.getObject = function(params) {
+      return {
+        Body: input
+      }
+    }
+
+    t.tearDown(() => {
+      s3.getObject = getObject
+    })
+
+    getLogs(params, (error, data) => {
+      t.match(data, [{
+        line: input
+      , timestamp: /^[0-9]{13}$/
       }], 'JSON success')
       t.strictEqual(error, null, 'JSON.parse is clear')
     })
@@ -703,14 +733,15 @@ test('prepareLogs', async (t) => {
     }
 
     const output = input.map(function(item) {
-      item.timestamp = eventData.timestamp
-      item.file = eventData.file
-      item.meta = {
+      const line = {...item}
+      line.timestamp = eventData.timestamp
+      line.file = eventData.file
+      line.meta = {
         ...item.meta
       , ...eventData.meta
       }
 
-      return item
+      return line
     })
 
     t.deepEqual(prepareLogs(input, eventData), output
@@ -737,14 +768,15 @@ test('prepareLogs', async (t) => {
     }
 
     const output = input.map(function(item) {
-      item.timestamp = /^[0-9]{13}$/
-      item.file = eventData.file
-      item.meta = {
+      const line = {...item}
+      line.timestamp = /^[0-9]{13}$/
+      line.file = eventData.file
+      line.meta = {
         ...item.meta
       , ...eventData.meta
       }
 
-      return item
+      return line
     })
 
     t.match(prepareLogs(input, eventData), output

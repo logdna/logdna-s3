@@ -3,23 +3,25 @@
 const zlib = require('zlib')
 const {test, threw} = require('tap')
 
+const transformer = require('../../../lib/transformer.js')
 const {
   extractData
 , getLogs
 , prepareLogs
-, s3
-} = require('../../../lib/transformer.js')
+} = transformer
 
+/* eslint-disable */
 const INITIAL_GETLOGS_ERROR = 'Both Bucket and Key params must be provided'
-const CORRUPTED_DATA_ERROR = 'Corrupted data returned from'
-const JSON_PARSE_ERROR = 'Error in Parsing the JSON Data from'
+const CORRUPTED_DATA_ERROR = 'Corrupted data returned from the object'
+const JSON_PARSE_ERROR = 'Error in Parsing the JSON Data from the S3 Object'
 const META_EVENT_TIME = new Date(Date.now() - 1000)
 const LOG_EVENT_TIME = new Date()
 const LOG_LINE = 'test log'
-const S3_GETOBJECT_ERROR = 's3.getObject failed to return an object'
+const S3_GETOBJECT_ERROR = 'Error in Getting the S3 Object'
 const SAMPLE_BUCKET = 'sampleBucket'
 const SAMPLE_OBJECT_KEY = 'test'
-const ZLIB_GUNZIP_ERROR = 'Error in Unzipping'
+const ZLIB_GUNZIP_ERROR = 'Error in Unzipping the S3 Object'
+/* eslint-enable */
 
 test('extractData', async (t) => {
   t.test('no data', async (t) => {
@@ -371,279 +373,15 @@ test('extractData', async (t) => {
   })
 }).catch(threw)
 
-test('getLogs', async (t) => {
-  t.test('undefined params', async (t) => {
-    getLogs(undefined, (error, data) => {
-      t.strictEqual(data, undefined, 'no success')
-      t.strictEqual(error, INITIAL_GETLOGS_ERROR, 'initial error')
-    })
-  })
-
-  t.test('null params', async (t) => {
-    getLogs(null, (error, data) => {
-      t.strictEqual(data, undefined, 'no success')
-      t.strictEqual(error, INITIAL_GETLOGS_ERROR, 'initial error')
-    })
-  })
-
-  t.test('empty params', async (t) => {
-    getLogs({}, (error, data) => {
-      t.strictEqual(data, undefined, 'no success')
-      t.strictEqual(error, INITIAL_GETLOGS_ERROR, 'initial error')
-    })
-  })
-
-  t.test('params having just Key', async (t) => {
-    getLogs({Key: SAMPLE_OBJECT_KEY}, (error, data) => {
-      t.strictEqual(data, undefined, 'no success')
-      t.strictEqual(error, INITIAL_GETLOGS_ERROR, 'initial error')
-    })
-  })
-
-  t.test('params having just Bucket', async (t) => {
-    getLogs({Bucket: SAMPLE_BUCKET}, (error, data) => {
-      t.strictEqual(data, undefined, 'no success')
-      t.strictEqual(error, INITIAL_GETLOGS_ERROR, 'initial error')
-    })
-  })
-
-  t.test('where s3 returns an error', async (t) => {
-    const params = {
-      Bucket: SAMPLE_BUCKET
-    , Key: SAMPLE_OBJECT_KEY
-    }
-
-    const getObject = s3.getObject
-    s3.getObject = function(params) {
-      throw Error(S3_GETOBJECT_ERROR)
-    }
-
-    t.tearDown(() => {
-      s3.getObject = getObject
-    })
-
-    getLogs(params, (error, data) => {
-      t.strictEqual(data, undefined, 'no success')
-      t.strictEqual(error.split(': ')[2], S3_GETOBJECT_ERROR, 's3.getObject errors out')
-    })
-  })
-
-  t.test('where s3 returns an undefined data', async (t) => {
-    const params = {
-      Bucket: SAMPLE_BUCKET
-    , Key: SAMPLE_OBJECT_KEY
-    }
-
-    const getObject = s3.getObject
-    s3.getObject = function(params) {
-      return undefined
-    }
-
-    t.tearDown(() => {
-      s3.getObject = getObject
-    })
-
-    getLogs(params, (error, data) => {
-      t.strictEqual(data, undefined, 'no success')
-      t.strictEqual(error, `${CORRUPTED_DATA_ERROR} ${SAMPLE_BUCKET}/${SAMPLE_OBJECT_KEY}`
-      , 's3.getObject result errors out')
-    })
-  })
-
-  t.test('where s3 returns a null data', async (t) => {
-    const params = {
-      Bucket: SAMPLE_BUCKET
-    , Key: SAMPLE_OBJECT_KEY
-    }
-
-    const getObject = s3.getObject
-    s3.getObject = function(params) {
-      return null
-    }
-
-    t.tearDown(() => {
-      s3.getObject = getObject
-    })
-
-    getLogs(params, (error, data) => {
-      t.strictEqual(data, undefined, 'no success')
-      t.strictEqual(error, `${CORRUPTED_DATA_ERROR} ${SAMPLE_BUCKET}/${SAMPLE_OBJECT_KEY}`
-      , 's3.getObject result errors out')
-    })
-  })
-
-  t.test('where s3 returns an empty data', async (t) => {
-    const params = {
-      Bucket: SAMPLE_BUCKET
-    , Key: SAMPLE_OBJECT_KEY
-    }
-
-    const getObject = s3.getObject
-    s3.getObject = function(params) {
-      return {}
-    }
-
-    t.tearDown(() => {
-      s3.getObject = getObject
-    })
-
-    getLogs(params, (error, data) => {
-      t.strictEqual(data, undefined, 'no success')
-      t.strictEqual(error, `${CORRUPTED_DATA_ERROR} ${SAMPLE_BUCKET}/${SAMPLE_OBJECT_KEY}`
-      , 's3.getObject result errors out')
-    })
-  })
-
-  t.test('where data is unzippable', async (t) => {
-    const params = {
-      Bucket: SAMPLE_BUCKET
-    , Key: `${SAMPLE_OBJECT_KEY}.gz`
-    }
-
-    const getObject = s3.getObject
-    s3.getObject = function(params) {
-      return {
-        Body: LOG_LINE
-      }
-    }
-
-    t.tearDown(() => {
-      s3.getObject = getObject
-    })
-
-    getLogs(params, (error, data) => {
-      t.strictEqual(data, undefined, 'no success')
-      t.strictEqual(error.split(': ')[0]
-      , `${ZLIB_GUNZIP_ERROR} ${SAMPLE_BUCKET}/${params.Key}`
-      , 'zlib.gunzipSync errors out')
-    })
-  })
-
-  t.test('where data is zippable', async (t) => {
-    const params = {
-      Bucket: SAMPLE_BUCKET
-    , Key: `${SAMPLE_OBJECT_KEY}.gz`
-    }
-
-    const getObject = s3.getObject
-    s3.getObject = function(params) {
-      return {
-        Body: zlib.gzipSync(Buffer.from(LOG_LINE))
-      }
-    }
-
-    t.tearDown(() => {
-      s3.getObject = getObject
-    })
-
-    getLogs(params, (error, data) => {
-      t.match(data, [{
-        line: LOG_LINE
-      , timestamp: /^[0-9]{13}$/
-      }], 'first success')
-      t.strictEqual(error, null, 'zlib.gunzipSync is clear')
-    })
-  })
-
-  t.test('where data is zippable but corrupted json', async (t) => {
-    const params = {
-      Bucket: SAMPLE_BUCKET
-    , Key: `${SAMPLE_OBJECT_KEY}.json.gz`
-    }
-
-    const input = JSON.stringify({
-      log: LOG_LINE
-    })
-
-    const getObject = s3.getObject
-    s3.getObject = function(params) {
-      return {
-        Body: zlib.gzipSync(Buffer.from(input + ' noise'))
-      }
-    }
-
-    t.tearDown(() => {
-      s3.getObject = getObject
-    })
-
-    getLogs(params, (error, data) => {
-      t.strictEqual(data, undefined, 'no success')
-      t.strictEqual(error.split(': ')[0]
-      , `${JSON_PARSE_ERROR} ${SAMPLE_BUCKET}/${params.Key}`
-      , 'JSON.parse errors out')
-    })
-  })
-
-  t.test('where data is valid zippable json', async (t) => {
-    const params = {
-      Bucket: SAMPLE_BUCKET
-    , Key: `${SAMPLE_OBJECT_KEY}.json.gz`
-    }
-
-    const input = JSON.stringify({
-      log: LOG_LINE
-    })
-
-    const getObject = s3.getObject
-    s3.getObject = function(params) {
-      return {
-        Body: zlib.gzipSync(Buffer.from(input))
-      }
-    }
-
-    t.tearDown(() => {
-      s3.getObject = getObject
-    })
-
-    getLogs(params, (error, data) => {
-      t.match(data, [{
-        line: input
-      , timestamp: /^[0-9]{13}$/
-      }], 'Zipped JSON success')
-      t.strictEqual(error, null, 'JSON.parse is clear')
-    })
-  })
-
-  t.test('where data is valid json', async (t) => {
-    const params = {
-      Bucket: SAMPLE_BUCKET
-    , Key: `${SAMPLE_OBJECT_KEY}.json`
-    }
-
-    const input = JSON.stringify({
-      log: LOG_LINE
-    })
-
-    const getObject = s3.getObject
-    s3.getObject = function(params) {
-      return {
-        Body: input
-      }
-    }
-
-    t.tearDown(() => {
-      s3.getObject = getObject
-    })
-
-    getLogs(params, (error, data) => {
-      t.match(data, [{
-        line: input
-      , timestamp: /^[0-9]{13}$/
-      }], 'JSON success')
-      t.strictEqual(error, null, 'JSON.parse is clear')
-    })
-  })
-}).catch(threw)
-
 test('prepareLogs', async (t) => {
   t.test('undefined logs', async (t) => {
-    t.strictEqual(prepareLogs(null, null), undefined, 'must return undefined')
+    t.deepEqual(prepareLogs(null, null), [], 'must return an empty array')
   })
 
   t.test('non-Array logs', async (t) => {
-    t.strictEqual(prepareLogs({
+    t.deepEqual(prepareLogs({
       logs: ['logs']
-    }, null), undefined, 'must return undefined')
+    }, null), [], 'must return an empty array')
   })
 
   t.test('array logs not having line field', async (t) => {
@@ -662,9 +400,13 @@ test('prepareLogs', async (t) => {
     })
 
     const output = input.map(function(item) {
-      item.timestamp = /^[0-9]{13}$/
-      item.meta = {}
-      return item
+      const line = item.line
+      const opts = {
+        timestamp: /^[0-9]{13}$/
+      , meta: {}
+      }
+
+      return {line, opts}
     })
 
     t.match(prepareLogs(input, null), output, 'must return an array with no meta')
@@ -683,8 +425,13 @@ test('prepareLogs', async (t) => {
     })
 
     const output = input.map(function(item) {
-      item.timestamp = /^[0-9]{13}$/
-      return item
+      const line = item.line
+      const opts = {
+        timestamp: /^[0-9]{13}$/
+      , meta: item.meta
+      }
+
+      return {line, opts}
     })
 
     t.match(prepareLogs(input, null), output, 'must return an array with meta')
@@ -704,8 +451,14 @@ test('prepareLogs', async (t) => {
     })
 
     const output = input.map(function(item) {
-      item.file = undefined
-      return item
+      const line = item.line
+      const opts = {
+        app: undefined
+      , meta: item.meta
+      , timestamp: item.timestamp
+      }
+
+      return {line, opts}
     })
 
     t.deepEqual(prepareLogs(input, null), output
@@ -733,15 +486,17 @@ test('prepareLogs', async (t) => {
     }
 
     const output = input.map(function(item) {
-      const line = {...item}
-      line.timestamp = eventData.timestamp
-      line.file = eventData.file
-      line.meta = {
-        ...item.meta
-      , ...eventData.meta
+      const line = item.line
+      const opts = {
+        app: eventData.file
+      , timestamp: eventData.timestamp
+      , meta: {
+          ...item.meta
+        , ...eventData.meta
+        }
       }
 
-      return line
+      return {line, opts}
     })
 
     t.deepEqual(prepareLogs(input, eventData), output
@@ -768,18 +523,304 @@ test('prepareLogs', async (t) => {
     }
 
     const output = input.map(function(item) {
-      const line = {...item}
-      line.timestamp = /^[0-9]{13}$/
-      line.file = eventData.file
-      line.meta = {
-        ...item.meta
-      , ...eventData.meta
+      const line = item.line
+      const opts = {
+        app: eventData.file
+      , timestamp: /^[0-9]{13}$/
+      , meta: {
+          ...item.meta
+        , ...eventData.meta
+        }
       }
 
-      return line
+      return {line, opts}
     })
 
     t.match(prepareLogs(input, eventData), output
     , 'must return an array with default timestamp')
+  })
+}).catch(threw)
+
+test('getLogs', async (t) => {
+  t.test('undefined params', async (t) => {
+    try {
+      await getLogs(undefined)
+    } catch (error) {
+      t.strictEqual(error.message, INITIAL_GETLOGS_ERROR
+      , 'error message should be strictly equal')
+      t.deepEqual(error.meta, {params: undefined}, 'error meta should be deeply equal')
+    }
+  })
+
+
+  t.test('null params', async (t) => {
+    try {
+      await getLogs(null)
+    } catch (error) {
+      t.strictEqual(error.message, INITIAL_GETLOGS_ERROR
+      , 'error message should be strictly equal')
+      t.deepEqual(error.meta, {params: null}, 'error meta should be deeply equal')
+    }
+  })
+
+
+  t.test('empty params', async (t) => {
+    try {
+      await getLogs({})
+    } catch (error) {
+      t.strictEqual(error.message, INITIAL_GETLOGS_ERROR
+      , 'error message should be strictly equal')
+      t.deepEqual(error.meta, {params: {}}, 'error meta should be deeply equal')
+    }
+  })
+
+  t.test('params having just Key', async (t) => {
+    const params = {Key: SAMPLE_OBJECT_KEY}
+    try {
+      await getLogs(params)
+    } catch (error) {
+      t.strictEqual(error.message, INITIAL_GETLOGS_ERROR
+      , 'error message should be strictly equal')
+      t.deepEqual(error.meta, {params}, 'error meta should be deeply equal')
+    }
+  })
+
+  t.test('params having just Bucket', async (t) => {
+    const params = {Bucket: SAMPLE_BUCKET}
+    try {
+      await getLogs(params)
+    } catch (error) {
+      t.strictEqual(error.message, INITIAL_GETLOGS_ERROR
+      , 'error message should be strictly equal')
+      t.deepEqual(error.meta, {params}, 'error meta should be deeply equal')
+    }
+  })
+
+  t.test('where s3 returns an error', async (t) => {
+    const params = {
+      Bucket: SAMPLE_BUCKET
+    , Key: SAMPLE_OBJECT_KEY
+    }
+
+    const getObject = transformer.getObject
+    transformer.getObject = async function(params) {
+      throw Error(S3_GETOBJECT_ERROR)
+    }
+
+    t.tearDown(() => {
+      transformer.getObject = getObject
+    })
+
+    await t.rejects(getLogs(params), {
+      message: S3_GETOBJECT_ERROR
+    , meta: {
+        error: new Error(S3_GETOBJECT_ERROR)
+      , params
+      }
+    }, 'Expected error is thrown')
+  })
+
+  t.test('where s3 returns an undefined data', async (t) => {
+    const params = {
+      Bucket: SAMPLE_BUCKET
+    , Key: SAMPLE_OBJECT_KEY
+    }
+
+    const getObject = transformer.getObject
+    transformer.getObject = async function(params) {
+      return undefined
+    }
+
+    t.tearDown(() => {
+      transformer.getObject = getObject
+    })
+
+    await t.rejects(getLogs(params), {
+      message: CORRUPTED_DATA_ERROR
+    , meta: {params}
+    }, 'Expected error is thrown')
+  })
+
+  t.test('where s3 returns an undefined data', async (t) => {
+    const params = {
+      Bucket: SAMPLE_BUCKET
+    , Key: SAMPLE_OBJECT_KEY
+    }
+
+    const getObject = transformer.getObject
+    transformer.getObject = async function(params) {
+      return null
+    }
+
+    t.tearDown(() => {
+      transformer.getObject = getObject
+    })
+
+    await t.rejects(getLogs(params), {
+      message: CORRUPTED_DATA_ERROR
+    , meta: {params}
+    }, 'Expected error is thrown')
+  })
+
+  t.test('where s3 returns an undefined data', async (t) => {
+    const params = {
+      Bucket: SAMPLE_BUCKET
+    , Key: SAMPLE_OBJECT_KEY
+    }
+
+    const getObject = transformer.getObject
+    transformer.getObject = async function(params) {
+      return {}
+    }
+
+    t.tearDown(() => {
+      transformer.getObject = getObject
+    })
+
+    await t.rejects(getLogs(params), {
+      message: CORRUPTED_DATA_ERROR
+    , meta: {params}
+    }, 'Expected error is thrown')
+  })
+
+  t.test('where data is unzippable', async (t) => {
+    const params = {
+      Bucket: SAMPLE_BUCKET
+    , Key: `${SAMPLE_OBJECT_KEY}.gz`
+    }
+
+    const type = {
+      json: false
+    , gz: true
+    }
+
+    const getObject = transformer.getObject
+    transformer.getObject = async function(params) {
+      return {
+        Body: LOG_LINE
+      }
+    }
+
+    t.tearDown(() => {
+      transformer.getObject = getObject
+    })
+
+    await t.rejects(getLogs(params), {
+      message: ZLIB_GUNZIP_ERROR
+    , meta: {params, type}
+    }, 'Expected error is thrown')
+  })
+
+
+  t.test('where data is zippable', async (t) => {
+    const params = {
+      Bucket: SAMPLE_BUCKET
+    , Key: `${SAMPLE_OBJECT_KEY}.gz`
+    }
+
+    const getObject = transformer.getObject
+    transformer.getObject = async function(params) {
+      return {
+        Body: zlib.gzipSync(Buffer.from(LOG_LINE))
+      }
+    }
+
+    t.tearDown(() => {
+      transformer.getObject = getObject
+    })
+
+    const data = await getLogs(params)
+    t.match(data, [{
+      line: LOG_LINE
+    , timestamp: /^[0-9]{13}$/
+    }], 'first success')
+  })
+
+  t.test('where data is valid zippable json', async (t) => {
+    const params = {
+      Bucket: SAMPLE_BUCKET
+    , Key: `${SAMPLE_OBJECT_KEY}.json.gz`
+    }
+
+    const input = JSON.stringify({
+      log: LOG_LINE
+    })
+
+    const getObject = transformer.getObject
+    transformer.getObject = async function(params) {
+      return {
+        Body: zlib.gzipSync(Buffer.from(input))
+      }
+    }
+
+    t.tearDown(() => {
+      transformer.getObject = getObject
+    })
+
+    const data = await getLogs(params)
+    t.match(data, [{
+      line: input
+    , timestamp: /^[0-9]{13}$/
+    }], 'Zipped JSON success')
+  })
+
+  t.test('where data is zippable but corrupted json', async (t) => {
+    const params = {
+      Bucket: SAMPLE_BUCKET
+    , Key: `${SAMPLE_OBJECT_KEY}.json.gz`
+    }
+
+    const type = {
+      json: true
+    , gz: true
+    }
+
+    const input = JSON.stringify({
+      log: LOG_LINE
+    })
+
+    const getObject = transformer.getObject
+    transformer.getObject = async function(params) {
+      return {
+        Body: zlib.gzipSync(Buffer.from(input + ' noise'))
+      }
+    }
+
+    t.tearDown(() => {
+      transformer.getObject = getObject
+    })
+
+    await t.rejects(getLogs(params), {
+      message: JSON_PARSE_ERROR
+    , meta: {params, type}
+    }, 'Expected error is thrown')
+  })
+
+  t.test('where data is valid json', async (t) => {
+    const params = {
+      Bucket: SAMPLE_BUCKET
+    , Key: `${SAMPLE_OBJECT_KEY}.json`
+    }
+
+    const input = JSON.stringify({
+      log: LOG_LINE
+    })
+
+    const getObject = transformer.getObject
+    transformer.getObject = async function(params) {
+      return {
+        Body: input
+      }
+    }
+
+    t.tearDown(() => {
+      transformer.getObject = getObject
+    })
+
+    const data = await getLogs(params)
+    t.match(data, [{
+      line: input
+    , timestamp: /^[0-9]{13}$/
+    }], 'JSON success')
   })
 }).catch(threw)

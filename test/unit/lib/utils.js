@@ -2,33 +2,11 @@
 
 const {test, threw} = require('tap')
 const {
-  batchify
-, checkFileFormat
+  checkFileFormat
 , getProperty
 , hasProperty
 , setProperty
 } = require('../../../lib/utils.js')
-
-test('batchify', async (t) => {
-  t.test('chunks empty array', async (t) => {
-    const input = []
-    const result = batchify([], 2)
-    t.deepEqual(input, [], 'empty array')
-    t.notStrictEqual(input, result, 'new array created')
-  })
-
-  t.test('chunks input array', async (t) => {
-    t.deepEqual(batchify([1, 2, 3], 1), [[1], [2], [3]], 'single element chunks')
-    t.deepEqual(
-      batchify([1, 2, 3, 4, 5], 2)
-    , [[1, 2], [3, 4], [5]]
-    , 'remainder in separate chunk')
-    t.deepEqual(
-      batchify([{a: 'b'}, {c: 'd'}, {e: 'f'}], 2)
-    , [[{a: 'b'}, {c: 'd'}], [{e: 'f'}]]
-    , 'chunks an array of objects')
-  })
-}).catch(threw)
 
 test('checkFileFormat', async (t) => {
   t.deepEqual(checkFileFormat('sampleData.json.gz'), {

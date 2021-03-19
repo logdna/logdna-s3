@@ -36,7 +36,7 @@ jobs:
           name: Build S3 Lambda
           command: |
             npm ci --production
-            zip logdna-s3.zip -r node_modules/ index.js package-lock.json lib/*.js
+            zip logdna-s3.zip -r node_modules/ index.js package.json lib/*.js
       - persist_to_workspace:
           root: .
           paths:

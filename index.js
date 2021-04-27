@@ -50,5 +50,5 @@ async function handler(event, context) {
 
   // Ensure logs have been flushed to LogDNA before finishing
   await once(logger, 'cleared')
-  return
+  return 'Done!'
 }

@@ -823,4 +823,76 @@ test('getLogs', async (t) => {
     , timestamp: /^[0-9]{13}$/
     }], 'JSON success')
   })
+
+  t.test('where data is valid non-json', async (t) => {
+    const params = {
+      Bucket: SAMPLE_BUCKET
+    , Key: `${SAMPLE_OBJECT_KEY}.log`
+    }
+
+    const input = [
+      `${LOG_LINE} 0`
+    , `${LOG_LINE} 1`
+    , `${LOG_LINE} 2`
+    ].join('\n')
+
+    const getObject = transformer.getObject
+    transformer.getObject = async function(params) {
+      return {
+        Body: input
+      }
+    }
+
+    t.tearDown(() => {
+      transformer.getObject = getObject
+    })
+
+    const data = await getLogs(params)
+    t.match(data, [{
+      line: `${LOG_LINE} 0`
+    , timestamp: /^[0-9]{13}$/
+    }, {
+      line: `${LOG_LINE} 1`
+    , timestamp: /^[0-9]{13}$/
+    }, {
+      line: `${LOG_LINE} 2`
+    , timestamp: /^[0-9]{13}$/
+    }], 'JSON success')
+  })
+
+  t.test('where data is valid gzipped non-json', async (t) => {
+    const params = {
+      Bucket: SAMPLE_BUCKET
+    , Key: `${SAMPLE_OBJECT_KEY}.jsonl.gz`
+    }
+
+    const input = [
+      `${LOG_LINE} 0`
+    , `${LOG_LINE} 1`
+    , `${LOG_LINE} 2`
+    ].join('\n')
+
+    const getObject = transformer.getObject
+    transformer.getObject = async function(params) {
+      return {
+        Body: zlib.gzipSync(Buffer.from(input))
+      }
+    }
+
+    t.tearDown(() => {
+      transformer.getObject = getObject
+    })
+
+    const data = await getLogs(params)
+    t.match(data, [{
+      line: `${LOG_LINE} 0`
+    , timestamp: /^[0-9]{13}$/
+    }, {
+      line: `${LOG_LINE} 1`
+    , timestamp: /^[0-9]{13}$/
+    }, {
+      line: `${LOG_LINE} 2`
+    , timestamp: /^[0-9]{13}$/
+    }], 'JSON success')
+  })
 }).catch(threw)

@@ -30,7 +30,7 @@
 
 ### `HOSTNAME`
 
-> Optionally, use alternative host name set through the environment
+> Optionally, use an alternative host name configured through the environment
 
 | Config | Value |
 | --- | --- |
@@ -170,7 +170,7 @@
 
 ### `USER_AGENT`
 
-> user-agent header value to use while sending logs
+> The user-agent header value to use while sending logs
 
 | Config | Value |
 | --- | --- |

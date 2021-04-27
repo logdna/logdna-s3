@@ -9,39 +9,39 @@ const {
 } = require('../../../lib/utils.js')
 
 test('checkFileFormat', async (t) => {
-  t.deepEqual(checkFileFormat('sampleData.json.gz'), {
+  t.same(checkFileFormat('sampleData.json.gz'), {
     json: true
   , gz: true
   }, 'it should detect the gzipped json format')
 
-  t.deepEqual(checkFileFormat('sampleData.json'), {
+  t.same(checkFileFormat('sampleData.json'), {
     json: true
   , gz: false
   }, 'it should detect the regular json format')
 
-  t.deepEqual(checkFileFormat('sampleData.gz'), {
+  t.same(checkFileFormat('sampleData.gz'), {
     json: false
   , gz: true
   }, 'it should detect the regular gzipped format')
 
-  t.deepEqual(checkFileFormat('sampleData.jsonl'), {
+  t.same(checkFileFormat('sampleData.jsonl'), {
     json: false
   , gz: false
   }, 'it should detect the jsonl format')
 
-  t.deepEqual(checkFileFormat('sampleData'), {
+  t.same(checkFileFormat('sampleData'), {
     json: false
   , gz: false
   }, 'it should detect no format')
 
-  t.deepEqual(checkFileFormat(), undefined
+  t.same(checkFileFormat(), undefined
   , 'it should return undefined for non-string')
 }).catch(threw)
 
 test('hasProperty', async (t) => {
   const obj = {a: 'b'}
-  t.strictEqual(hasProperty(obj, 'a'), true, 'true for defined property')
-  t.strictEqual(
+  t.equal(hasProperty(obj, 'a'), true, 'true for defined property')
+  t.equal(
     hasProperty(obj, 'hasOwnProperty')
   , false
   , 'false for propertied defined on prototype'
@@ -59,14 +59,14 @@ test('complex hasProperty', async (t) => {
     }
   }
 
-  t.strictEqual(hasProperty(undefined, 'l1'), false, 'object being undefined')
-  t.strictEqual(hasProperty(null, 'l1'), false, 'object being null')
-  t.strictEqual(hasProperty(input), false, 'default string')
-  t.strictEqual(hasProperty(input, 'l1.l1p2.l3p1'), true, 'default separator')
-  t.strictEqual(hasProperty(input, 'l1-l1p2-l3p1', '-'), true, 'custom separator')
-  t.strictEqual(hasProperty(input, 'l1.l1p2.l3p2.l4p1'), false
+  t.equal(hasProperty(undefined, 'l1'), false, 'object being undefined')
+  t.equal(hasProperty(null, 'l1'), false, 'object being null')
+  t.equal(hasProperty(input), false, 'default string')
+  t.equal(hasProperty(input, 'l1.l1p2.l3p1'), true, 'default separator')
+  t.equal(hasProperty(input, 'l1-l1p2-l3p1', '-'), true, 'custom separator')
+  t.equal(hasProperty(input, 'l1.l1p2.l3p2.l4p1'), false
   , 'props beyond null values')
-  t.strictEqual(hasProperty(input, 'l1.l1p2.nope'), false, 'no match')
+  t.equal(hasProperty(input, 'l1.l1p2.nope'), false, 'no match')
 }).catch(threw)
 
 test('getProperty', async (t) => {
@@ -80,14 +80,14 @@ test('getProperty', async (t) => {
     }
   }
 
-  t.strictEqual(getProperty(undefined, 'l1'), undefined, 'object being undefined')
-  t.strictEqual(getProperty(null, 'l1'), undefined, 'object being null')
-  t.strictEqual(getProperty(input), undefined, 'default string')
-  t.strictEqual(getProperty(input, 'l1.l1p2.l3p1'), 4, 'default separator')
-  t.strictEqual(getProperty(input, 'l1-l1p2-l3p1', '-'), 4, 'custom separator')
-  t.strictEqual(getProperty(input, 'l1.l1p2.l3p2.l4p1'), null
+  t.equal(getProperty(undefined, 'l1'), undefined, 'object being undefined')
+  t.equal(getProperty(null, 'l1'), undefined, 'object being null')
+  t.equal(getProperty(input), undefined, 'default string')
+  t.equal(getProperty(input, 'l1.l1p2.l3p1'), 4, 'default separator')
+  t.equal(getProperty(input, 'l1-l1p2-l3p1', '-'), 4, 'custom separator')
+  t.equal(getProperty(input, 'l1.l1p2.l3p2.l4p1'), null
   , 'props beyond null values')
-  t.strictEqual(getProperty(input, 'l1.l1p2.nope'), undefined, 'no match')
+  t.equal(getProperty(input, 'l1.l1p2.nope'), undefined, 'no match')
 }).catch(threw)
 
 test('setProperty', async (t) => {
@@ -99,17 +99,17 @@ test('setProperty', async (t) => {
 
   {
     const result = setProperty(input, '', 1)
-    t.deepEqual(result, {}, 'empty key results in no change')
+    t.same(result, {}, 'empty key results in no change')
   }
 
   {
     const result = setProperty(input, 'x', 2)
-    t.deepEqual(result, {x: 2}, 'singular key sets immeidate value')
+    t.same(result, {x: 2}, 'singular key sets immeidate value')
   }
 
   {
     const result = setProperty(input, 'foo.bar', 1)
-    t.deepEqual(result, {
+    t.same(result, {
       x: 2
     , foo: {
         bar: 1
@@ -119,7 +119,7 @@ test('setProperty', async (t) => {
 
   {
     const result = setProperty(input, 'bar|baz|nested', [1, 2], '|')
-    t.deepEqual(result, {
+    t.same(result, {
       x: 2
     , foo: {
         bar: 1
@@ -134,7 +134,7 @@ test('setProperty', async (t) => {
 
   {
     const result = setProperty(input, 'foo.bar', 100)
-    t.deepEqual(result, {
+    t.same(result, {
       x: 2
     , foo: {
         bar: 100

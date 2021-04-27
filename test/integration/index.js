@@ -70,7 +70,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
     nock(buildLoggerURL(config))
       .post('', (body) => {
         const numProps = Object.keys(body).length
-        t.strictEqual(numProps, 2, 'Number of request body properties')
+        t.equal(numProps, 2, 'Number of request body properties')
         t.match(body, {
           e: 'ls'
         , ls: [
@@ -86,7 +86,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
             }
           ]
         })
-        t.strictEqual(body.ls.length, 1, 'log line count')
+        t.equal(body.ls.length, 1, 'log line count')
         return true
       })
       .query((qs) => {
@@ -99,7 +99,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
       })
       .reply(200, responseText)
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -129,7 +129,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
     nock(buildLoggerURL(config))
       .post('', (body) => {
         const numProps = Object.keys(body).length
-        t.strictEqual(numProps, 2, 'Number of request body properties')
+        t.equal(numProps, 2, 'Number of request body properties')
         t.match(body, {
           e: 'ls'
         , ls: [
@@ -145,7 +145,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
             }
           ]
         })
-        t.strictEqual(body.ls.length, 1, 'log line count')
+        t.equal(body.ls.length, 1, 'log line count')
         return true
       })
       .query((qs) => {
@@ -158,7 +158,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
       })
       .reply(200, responseText)
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -189,7 +189,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
     nock(buildLoggerURL(config))
       .post('', (body) => {
         const numProps = Object.keys(body).length
-        t.strictEqual(numProps, 2, 'Number of request body properties')
+        t.equal(numProps, 2, 'Number of request body properties')
         t.match(body, {
           e: 'ls'
         , ls: [
@@ -205,7 +205,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
             }
           ]
         })
-        t.strictEqual(body.ls.length, 1, 'log line count')
+        t.equal(body.ls.length, 1, 'log line count')
         return true
       })
       .query((qs) => {
@@ -218,7 +218,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
       })
       .reply(200, responseText)
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -248,7 +248,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
     nock(buildLoggerURL(config))
       .post('', (body) => {
         const numProps = Object.keys(body).length
-        t.strictEqual(numProps, 2, 'Number of request body properties')
+        t.equal(numProps, 2, 'Number of request body properties')
         t.match(body, {
           e: 'ls'
         , ls: [
@@ -264,7 +264,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
             }
           ]
         })
-        t.strictEqual(body.ls.length, 1, 'log line count')
+        t.equal(body.ls.length, 1, 'log line count')
         return true
       })
       .query((qs) => {
@@ -277,7 +277,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
       })
       .reply(200, responseText)
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 

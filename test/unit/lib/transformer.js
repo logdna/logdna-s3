@@ -25,19 +25,19 @@ const ZLIB_GUNZIP_ERROR = 'Error in Unzipping the S3 Object'
 
 test('extractData', async (t) => {
   t.test('no data', async (t) => {
-    t.deepEqual(extractData(), [], 'empty array')
+    t.same(extractData(), [], 'empty array')
   })
 
   t.test('empty json', async (t) => {
-    t.deepEqual(extractData({}), [], 'empty array')
+    t.same(extractData({}), [], 'empty array')
   })
 
   t.test('empty array', async (t) => {
-    t.deepEqual(extractData([]), [], 'empty array')
+    t.same(extractData([]), [], 'empty array')
   })
 
   t.test('empty string', async (t) => {
-    t.deepEqual(extractData(''), [], 'empty array')
+    t.same(extractData(''), [], 'empty array')
   })
 
   t.test('data having Records array containing json', async (t) => {
@@ -53,7 +53,7 @@ test('extractData', async (t) => {
     , sampleField: 'test'
     }
 
-    t.deepEqual(extractData(data), [{
+    t.same(extractData(data), [{
       line: JSON.stringify(data.Records[0])
     , meta: {
         eventTime: data.eventTime
@@ -81,7 +81,7 @@ test('extractData', async (t) => {
     , sampleField: 'test'
     }
 
-    t.deepEqual(extractData(data), [{
+    t.same(extractData(data), [{
       line: JSON.stringify(data.Records[0])
     , meta: {
         eventTime: data.eventTime
@@ -108,7 +108,7 @@ test('extractData', async (t) => {
     , sampleField: 'test'
     }
 
-    t.deepEqual(extractData(data), [{
+    t.same(extractData(data), [{
       line: data.Records[0]
     , meta: {
         eventTime: data.eventTime
@@ -134,7 +134,7 @@ test('extractData', async (t) => {
     , sampleField: 'test'
     }
 
-    t.deepEqual(extractData(data), [{
+    t.same(extractData(data), [{
       line: JSON.stringify(data.Records)
     , meta: {
         eventTime: data.eventTime
@@ -151,7 +151,7 @@ test('extractData', async (t) => {
     , sampleField: 'test'
     }
 
-    t.deepEqual(extractData(data), [{
+    t.same(extractData(data), [{
       line: data.Records
     , meta: {
         eventTime: data.eventTime
@@ -189,7 +189,7 @@ test('extractData', async (t) => {
     , sampleField: 'test'
     }
 
-    t.deepEqual(extractData(data), [{
+    t.same(extractData(data), [{
       line: JSON.stringify(data.logFiles[0])
     , meta: {
         eventTime: data.eventTime
@@ -217,7 +217,7 @@ test('extractData', async (t) => {
     , sampleField: 'test'
     }
 
-    t.deepEqual(extractData(data), [{
+    t.same(extractData(data), [{
       line: JSON.stringify(data.logFiles[0])
     , meta: {
         eventTime: data.eventTime
@@ -244,7 +244,7 @@ test('extractData', async (t) => {
     , sampleField: 'test'
     }
 
-    t.deepEqual(extractData(data), [{
+    t.same(extractData(data), [{
       line: data.logFiles[0]
     , meta: {
         eventTime: data.eventTime
@@ -270,7 +270,7 @@ test('extractData', async (t) => {
     , sampleField: 'test'
     }
 
-    t.deepEqual(extractData(data), [{
+    t.same(extractData(data), [{
       line: JSON.stringify(data.logFiles)
     , meta: {
         eventTime: data.eventTime
@@ -287,7 +287,7 @@ test('extractData', async (t) => {
     , sampleField: 'test'
     }
 
-    t.deepEqual(extractData(data), [{
+    t.same(extractData(data), [{
       line: data.logFiles
     , meta: {
         eventTime: data.eventTime
@@ -319,7 +319,7 @@ test('extractData', async (t) => {
     , sampleField: 'test'
     }
 
-    t.deepEqual(extractData(data), [{
+    t.same(extractData(data), [{
       line: JSON.stringify(data)
     , timestamp: (new Date(META_EVENT_TIME)).getTime()
     }])
@@ -355,7 +355,7 @@ test('extractData', async (t) => {
     , sampleField: 'test'
     }
 
-    t.deepEqual(extractData(data), [{
+    t.same(extractData(data), [{
       line: JSON.stringify(data.Records[0])
     , meta: {
         eventTime: data.eventTime
@@ -375,17 +375,17 @@ test('extractData', async (t) => {
 
 test('prepareLogs', async (t) => {
   t.test('undefined logs', async (t) => {
-    t.deepEqual(prepareLogs(null, null), [], 'must return an empty array')
+    t.same(prepareLogs(null, null), [], 'must return an empty array')
   })
 
   t.test('non-Array logs', async (t) => {
-    t.deepEqual(prepareLogs({
+    t.same(prepareLogs({
       logs: ['logs']
     }, null), [], 'must return an empty array')
   })
 
   t.test('array logs not having line field', async (t) => {
-    t.deepEqual(prepareLogs([{
+    t.same(prepareLogs([{
       ts: Date.now()
     }, undefined], null), [], 'must return an empty array')
   })
@@ -461,7 +461,7 @@ test('prepareLogs', async (t) => {
       return {line, opts}
     })
 
-    t.deepEqual(prepareLogs(input, null), output
+    t.same(prepareLogs(input, null), output
     , 'must return an array with meta and timestamp')
   })
 
@@ -499,7 +499,7 @@ test('prepareLogs', async (t) => {
       return {line, opts}
     })
 
-    t.deepEqual(prepareLogs(input, eventData), output
+    t.same(prepareLogs(input, eventData), output
     , 'must return an array with full data')
   })
 
@@ -546,9 +546,9 @@ test('getLogs', async (t) => {
     try {
       await getLogs(undefined)
     } catch (error) {
-      t.strictEqual(error.message, INITIAL_GETLOGS_ERROR
+      t.equal(error.message, INITIAL_GETLOGS_ERROR
       , 'error message should be strictly equal')
-      t.deepEqual(error.meta, {params: undefined}, 'error meta should be deeply equal')
+      t.same(error.meta, {params: undefined}, 'error meta should be deeply equal')
     }
   })
 
@@ -557,9 +557,9 @@ test('getLogs', async (t) => {
     try {
       await getLogs(null)
     } catch (error) {
-      t.strictEqual(error.message, INITIAL_GETLOGS_ERROR
+      t.equal(error.message, INITIAL_GETLOGS_ERROR
       , 'error message should be strictly equal')
-      t.deepEqual(error.meta, {params: null}, 'error meta should be deeply equal')
+      t.same(error.meta, {params: null}, 'error meta should be deeply equal')
     }
   })
 
@@ -568,9 +568,9 @@ test('getLogs', async (t) => {
     try {
       await getLogs({})
     } catch (error) {
-      t.strictEqual(error.message, INITIAL_GETLOGS_ERROR
+      t.equal(error.message, INITIAL_GETLOGS_ERROR
       , 'error message should be strictly equal')
-      t.deepEqual(error.meta, {params: {}}, 'error meta should be deeply equal')
+      t.same(error.meta, {params: {}}, 'error meta should be deeply equal')
     }
   })
 
@@ -579,9 +579,9 @@ test('getLogs', async (t) => {
     try {
       await getLogs(params)
     } catch (error) {
-      t.strictEqual(error.message, INITIAL_GETLOGS_ERROR
+      t.equal(error.message, INITIAL_GETLOGS_ERROR
       , 'error message should be strictly equal')
-      t.deepEqual(error.meta, {params}, 'error meta should be deeply equal')
+      t.same(error.meta, {params}, 'error meta should be deeply equal')
     }
   })
 
@@ -590,9 +590,9 @@ test('getLogs', async (t) => {
     try {
       await getLogs(params)
     } catch (error) {
-      t.strictEqual(error.message, INITIAL_GETLOGS_ERROR
+      t.equal(error.message, INITIAL_GETLOGS_ERROR
       , 'error message should be strictly equal')
-      t.deepEqual(error.meta, {params}, 'error meta should be deeply equal')
+      t.same(error.meta, {params}, 'error meta should be deeply equal')
     }
   })
 
@@ -607,7 +607,7 @@ test('getLogs', async (t) => {
       throw Error(S3_GETOBJECT_ERROR)
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -631,7 +631,7 @@ test('getLogs', async (t) => {
       return undefined
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -652,7 +652,7 @@ test('getLogs', async (t) => {
       return null
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -673,7 +673,7 @@ test('getLogs', async (t) => {
       return {}
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -701,7 +701,7 @@ test('getLogs', async (t) => {
       }
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -725,7 +725,7 @@ test('getLogs', async (t) => {
       }
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -753,7 +753,7 @@ test('getLogs', async (t) => {
       }
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -786,7 +786,7 @@ test('getLogs', async (t) => {
       }
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -813,7 +813,7 @@ test('getLogs', async (t) => {
       }
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -843,7 +843,7 @@ test('getLogs', async (t) => {
       }
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -879,7 +879,7 @@ test('getLogs', async (t) => {
       }
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 

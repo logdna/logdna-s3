@@ -5,11 +5,16 @@
   "main": "index.js",
   "scripts": {
     "docs": "config-doc lib/config.js > doc/env.md",
-    "lint": "eslint ./",
+    "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "pretest": "npm run lint",
     "tap": "tap",
-    "test": "npm run tap"
+    "pretest": "npm run lint",
+    "pretest:ci": "npm run lint",
+    "test": "npm run tap",
+    "test:ci": "tools/test-ci.sh",
+    "package": "tools/package.sh",
+    "release": "semantic-release",
+    "release:dry": "npm run release -- --dry-run --no-ci --branches ${BRANCH_NAME:-master}"
   },
   "eslintConfig": {
     "root": true,
@@ -25,7 +30,6 @@
     }
   },
   "tap": {
-    "esm": false,
     "ts": false,
     "jsx": false,
     "browser": false,
@@ -52,28 +56,47 @@
     "functions": 100,
     "lines": 100
   },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
   "dependencies": {
     "@logdna/env-config": "^1.0.5",
     "@logdna/logger": "^2.3.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^9.1.2",
+    "@commitlint/config-conventional": "^12.1.1",
+    "@semantic-release/github": "^7.2.1",
     "aws-sdk": "^2.590.0",
     "eslint": "^7.4.0",
-    "eslint-config-logdna": "^4.0.2",
+    "eslint-config-logdna": "^5.0.0",
     "nock": "^13.0.11",
-    "tap": "^14.11.0"
+    "semantic-release": "^17.4.2",
+    "semantic-release-config-logdna": "^1.1.1",
+    "tap": "^15.0.0",
+    "tap-parser": "^10.1.0",
+    "tap-xunit": "^2.4.1"
   },
   "keywords": [
-    "lambda",
     "logdna",
-    "aws",
-    "s3"
+    "lambda",
+    "logs",
+    "logging",
+    "s3",
+    "nodejs",
+    "node",
+    "logdna.com",
+    "logger",
+    "javascript"
   ],
-  "author": "LogDNA",
-  "license": "MIT"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/logdna/logdna-s3.git"
+  },
+  "author": {
+    "name": "LogDNA, Inc.",
+    "email": "help@logdna.com"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/logdna/logdna-s3/issues"
+  },
+  "homepage": "https://github.com/logdna/logdna-s3#readme"
 }

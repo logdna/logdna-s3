@@ -63,7 +63,7 @@ test('handler is the main method in lambda functions', async (t) => {
       }
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -96,7 +96,7 @@ test('handler is the main method in lambda functions', async (t) => {
       }
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 
@@ -129,7 +129,7 @@ test('handler is the main method in lambda functions', async (t) => {
       }
     }
 
-    t.tearDown(() => {
+    t.teardown(() => {
       transformer.getObject = getObject
     })
 

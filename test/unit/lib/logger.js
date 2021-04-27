@@ -18,7 +18,7 @@ function cleanupAfter(t) {
 test('buildLoggerURL builds the correct ingestion URL', async (t) => {
   t.test('From config defaults', async (tt) => {
     const url = await buildLoggerURL(config)
-    tt.strictEqual(url, 'https://logs.logdna.com:443/logs/ingest', 'URL value is correct')
+    tt.equal(url, 'https://logs.logdna.com:443/logs/ingest', 'URL value is correct')
   })
 
   t.test('Using the newer "ingestion-xxx" env vars', async (tt) => {
@@ -27,7 +27,7 @@ test('buildLoggerURL builds the correct ingestion URL', async (t) => {
     config.set('ingestion-port', '55500')
     config.set('ingestion-endpoint', '/our/endpoint')
     const url = await buildLoggerURL(config)
-    tt.strictEqual(
+    tt.equal(
       url
     , 'https://someserver.com:55500/our/endpoint'
     , 'URL value is correct'
@@ -41,7 +41,7 @@ test('buildLoggerURL builds the correct ingestion URL', async (t) => {
     config.set('ingestion-port', '55500')
     config.set('ingestion-endpoint', '/our/endpoint')
     const url = await buildLoggerURL(config)
-    tt.strictEqual(
+    tt.equal(
       url
     , 'http://someserver.com:55500/our/endpoint'
     , 'URL value is correct'

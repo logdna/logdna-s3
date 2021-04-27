@@ -1,12 +1,13 @@
 # No Temporary File
 *.swp
 .DS_Store
+pkg
 
 # No NPM Modules
 node_modules
 
 # No ZIP Files
-*.zip
+**/*.zip
 
 # No Testing Materials
 data

@@ -15,7 +15,7 @@ const TIMESTAMP = Date.now()
 
 test('handleEvent', async (t) => {
   t.test('no data', async (t) => {
-    t.deepEqual(handleEvent(), undefined, 'empty input')
+    t.same(handleEvent(), undefined, 'empty input')
   })
 
   t.test('event with no object and no event time', async (t) => {
@@ -122,7 +122,7 @@ test('handleEvent', async (t) => {
       }]
     }
 
-    t.deepEqual(handleEvent(event), {
+    t.same(handleEvent(event), {
       file: `${BUCKET_NAME}/${FILE_NAME}`
     , timestamp: TIMESTAMP
     , meta: {

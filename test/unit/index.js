@@ -2,10 +2,10 @@
 process.env.INGESTION_KEY = 'abc213'
 
 const {test, threw} = require('tap')
+const {object} = require('@logdna/stdlib')
 
 const config = require('../../lib/config.js')
 const {handler} = require('../../index.js')
-const {setProperty} = require('../../lib/utils.js')
 const transformer = require('../../lib/transformer.js')
 
 const BUCKET_NAME = 'random_name'
@@ -113,7 +113,7 @@ test('handler is the main method in lambda functions', async (t) => {
   })
 
   t.test('test without hostname', async (t) => {
-    setProperty(EVENT_DATA, 'Records.0.s3.bucket.name', undefined)
+    object.set(EVENT_DATA, 'Records.0.s3.bucket.name', undefined)
     config.set('hostname', undefined)
     const input = JSON.stringify({
       log: LOG_LINE

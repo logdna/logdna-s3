@@ -4,6 +4,7 @@ process.env.INGESTION_KEY = 'abc123'
 const os = require('os')
 const nock = require('nock')
 const {test, threw} = require('tap')
+const {object} = require('@logdna/stdlib')
 
 const {buildLoggerURL} = require('../../lib/logger.js')
 const config = require('../../lib/config.js')
@@ -11,10 +12,8 @@ const {handler} = require('../../index.js')
 const transformer = require('../../lib/transformer.js')
 const {
   formatObjectKey
-, getProperty
-, setProperty
 , trimTags
-} = require('../../lib/utils.js')
+} = require('../../lib/utils/index.js')
 
 const responseText = 'This is the ingester response'
 const BUCKET_NAME = 'random-name'
@@ -79,8 +78,8 @@ test('test getting, parsing, and sending S3 event', async (t) => {
             , level: LOG_LEVEL
             , line: input
             , meta: {
-                bucket: getProperty(EVENT_DATA, 'Records.0.s3.bucket')
-              , object: getProperty(EVENT_DATA, 'Records.0.s3.object')
+                bucket: object.get(EVENT_DATA, 'Records.0.s3.bucket')
+              , object: object.get(EVENT_DATA, 'Records.0.s3.object')
               }
             , timestamp: Number
             }
@@ -138,8 +137,8 @@ test('test getting, parsing, and sending S3 event', async (t) => {
             , level: LOG_LEVEL
             , line: input
             , meta: {
-                bucket: getProperty(EVENT_DATA, 'Records.0.s3.bucket')
-              , object: getProperty(EVENT_DATA, 'Records.0.s3.object')
+                bucket: object.get(EVENT_DATA, 'Records.0.s3.bucket')
+              , object: object.get(EVENT_DATA, 'Records.0.s3.object')
               }
             , timestamp: Number
             }
@@ -174,7 +173,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
       log: LOG_LINE
     })
 
-    setProperty(EVENT_DATA, 'Records.0.s3.bucket.name', undefined)
+    object.set(EVENT_DATA, 'Records.0.s3.bucket.name', undefined)
     config.set('hostname', undefined)
     const getObject = transformer.getObject
     transformer.getObject = async function({
@@ -198,8 +197,8 @@ test('test getting, parsing, and sending S3 event', async (t) => {
             , level: LOG_LEVEL
             , line: input
             , meta: {
-                bucket: getProperty(EVENT_DATA, 'Records.0.s3.bucket')
-              , object: getProperty(EVENT_DATA, 'Records.0.s3.object')
+                bucket: object.get(EVENT_DATA, 'Records.0.s3.bucket')
+              , object: object.get(EVENT_DATA, 'Records.0.s3.object')
               }
             , timestamp: Number
             }
@@ -257,8 +256,8 @@ test('test getting, parsing, and sending S3 event', async (t) => {
             , level: LOG_LEVEL
             , line: input
             , meta: {
-                bucket: getProperty(EVENT_DATA, 'Records.0.s3.bucket')
-              , object: getProperty(EVENT_DATA, 'Records.0.s3.object')
+                bucket: object.get(EVENT_DATA, 'Records.0.s3.bucket')
+              , object: object.get(EVENT_DATA, 'Records.0.s3.object')
               }
             , timestamp: Number
             }

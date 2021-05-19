@@ -1,6 +1,6 @@
 'use strict'
 
-const {test} = require('tap')
+const {test, threw} = require('tap')
 const config = require('../../../lib/config.js')
 const {buildLoggerURL} = require('../../../lib/logger.js')
 
@@ -47,4 +47,4 @@ test('buildLoggerURL builds the correct ingestion URL', async (t) => {
     , 'URL value is correct'
     )
   })
-})
+}).catch(threw)

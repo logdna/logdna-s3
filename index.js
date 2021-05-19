@@ -1,12 +1,13 @@
 'use strict'
 
 const {once} = require('events')
+const {object} = require('@logdna/stdlib')
 
 const config = require('./lib/config.js')
 const {handleEvent} = require('./lib/event-handler.js')
 const {createLoggerClient} = require('./lib/logger.js')
 const {getLogs, prepareLogs} = require('./lib/transformer.js')
-const {getProperty, trimTags} = require('./lib/utils.js')
+const {trimTags} = require('./lib/utils/index.js')
 
 const HOSTNAME_REGEX = /[^0-9a-zA-Z\-.]/g
 
@@ -24,8 +25,8 @@ async function handler(event, context) {
   }
 
   const s3params = {
-    Bucket: getProperty(eventData, 'meta.bucket.name')
-  , Key: getProperty(eventData, 'meta.object.key')
+    Bucket: object.get(eventData, 'meta.bucket.name')
+  , Key: object.get(eventData, 'meta.object.key')
   }
 
   const tags = config.get('tags')

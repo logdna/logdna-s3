@@ -1,5 +1,12 @@
 ## Changelog
 
+# [2.1.0](https://github.com/logdna/logdna-s3/compare/v2.0.0...v2.1.0) (2021-05-21)
+
+
+### Features
+
+* **stdlib**: use @logdna/stdlib for utilities [cd7608c](https://github.com/logdna/logdna-s3/commit/cd7608c8ff3c2abb0dce08152fc8e402981c1ff1) - Samir Musali
+
 # [2.0.0](https://github.com/logdna/logdna-s3/compare/v1.0.0...v2.0.0) (2021-04-29)
 
 

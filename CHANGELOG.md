@@ -1,5 +1,12 @@
 ## Changelog
 
+## [2.1.1](https://github.com/logdna/logdna-s3/compare/v2.1.0...v2.1.1) (2021-06-01)
+
+
+### Bug Fixes
+
+* **release**: ensure all files are included in release artifacts (#14) [204d1d4](https://github.com/logdna/logdna-s3/commit/204d1d4b1dcb43ee572b3eaa5b9fd1dcbc53522b) - GitHub, closes: [#14](https://github.com/logdna/logdna-s3/issues/14) [#12](https://github.com/logdna/logdna-s3/issues/12) [#13](https://github.com/logdna/logdna-s3/issues/13)
+
 # [2.1.0](https://github.com/logdna/logdna-s3/compare/v2.0.0...v2.1.0) (2021-05-21)
 
 

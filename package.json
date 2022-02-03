@@ -59,7 +59,7 @@
   "dependencies": {
     "@logdna/env-config": "^1.0.5",
     "@logdna/logger": "^2.3.0",
-    "@logdna/stdlib": "^1.1.0"
+    "@logdna/stdlib": "^1.1.5"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",

@@ -69,7 +69,7 @@
     "eslint": "^7.4.0",
     "eslint-config-logdna": "^5.0.0",
     "nock": "^13.0.11",
-    "semantic-release": "^17.4.2",
+    "semantic-release": "^19.0.3",
     "semantic-release-config-logdna": "^1.1.1",
     "tap": "^15.0.0",
     "tap-parser": "^10.1.0",

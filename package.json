@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "@logdna/env-config": "^1.0.5",
-    "@logdna/logger": "^2.3.0",
+    "@logdna/logger": "^2.6.6",
     "@logdna/stdlib": "^1.1.0"
   },
   "devDependencies": {

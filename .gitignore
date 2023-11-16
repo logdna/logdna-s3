@@ -14,6 +14,6 @@ data
 generateData.js
 
 # No TAP Artifacts
-.tap
+.tap*
 coverage
 .nyc_output

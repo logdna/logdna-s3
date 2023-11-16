@@ -1,5 +1,23 @@
 ## Changelog
 
+## [2.1.2](https://github.com/logdna/logdna-s3/compare/v2.1.1...v2.1.2) (2023-11-16)
+
+
+### Bug Fixes
+
+* **ci**: update build agent definitions [da416bf](https://github.com/logdna/logdna-s3/commit/da416bf5caec935cfbc4f0d870de30ad10dcf898) - Mike Del Tito
+* **ci**: use correct tap output file [ba759f6](https://github.com/logdna/logdna-s3/commit/ba759f6ae9d58dcbffda4ec559d263e54c4e8ffe) - Mike Del Tito
+
+
+### Chores
+
+* **deps**: update dependencies [b1ddb00](https://github.com/logdna/logdna-s3/commit/b1ddb00bc795fdf107411b14b577eede30ab119e) - Mike Del Tito
+
+
+### Miscellaneous
+
+* Update README.md with minimum runtime support [1e75f26](https://github.com/logdna/logdna-s3/commit/1e75f26237a69f579c042672e2995386814fe912) - Mike Del Tito
+
 ## [2.1.1](https://github.com/logdna/logdna-s3/compare/v2.1.0...v2.1.1) (2021-06-01)
 
 

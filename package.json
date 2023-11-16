@@ -34,7 +34,7 @@
     "jsx": false,
     "browser": false,
     "check-coverage": true,
-    "output-file": ".tap",
+    "output-file": ".tap-output",
     "timeout": 60,
     "nyc-arg": [
       "--all=true",

@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "@logdna/env-config": "^1.0.5",
-    "@logdna/logger": "^2.3.0",
+    "@logdna/logger": "^2.6.8",
     "@logdna/stdlib": "^1.1.0"
   },
   "devDependencies": {
@@ -71,8 +71,8 @@
     "nock": "^13.0.11",
     "semantic-release": "^17.4.2",
     "semantic-release-config-logdna": "^1.1.1",
-    "tap": "^15.0.0",
-    "tap-parser": "^10.1.0",
+    "tap": "^16.3.9",
+    "tap-parser": "^11.0.2",
     "tap-xunit": "^2.4.1"
   },
   "keywords": [

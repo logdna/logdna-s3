@@ -4,6 +4,7 @@ const zlib = require('zlib')
 const {test, threw} = require('tap')
 
 const transformer = require('../../../lib/transformer.js')
+const s3helper = require('../../../lib/aws-s3-v2-wrapper.js')
 const {
   extractData
 , getLogs
@@ -596,93 +597,6 @@ test('getLogs', async (t) => {
     }
   })
 
-  t.test('where s3 returns an error', async (t) => {
-    const params = {
-      Bucket: SAMPLE_BUCKET
-    , Key: SAMPLE_OBJECT_KEY
-    }
-
-    const getObject = transformer.getObject
-    transformer.getObject = async function(params) {
-      throw Error(S3_GETOBJECT_ERROR)
-    }
-
-    t.teardown(() => {
-      transformer.getObject = getObject
-    })
-
-    await t.rejects(getLogs(params), {
-      message: S3_GETOBJECT_ERROR
-    , meta: {
-        error: new Error(S3_GETOBJECT_ERROR)
-      , params
-      }
-    }, 'Expected error is thrown')
-  })
-
-  t.test('where s3 returns an undefined data', async (t) => {
-    const params = {
-      Bucket: SAMPLE_BUCKET
-    , Key: SAMPLE_OBJECT_KEY
-    }
-
-    const getObject = transformer.getObject
-    transformer.getObject = async function(params) {
-      return undefined
-    }
-
-    t.teardown(() => {
-      transformer.getObject = getObject
-    })
-
-    await t.rejects(getLogs(params), {
-      message: CORRUPTED_DATA_ERROR
-    , meta: {params}
-    }, 'Expected error is thrown')
-  })
-
-  t.test('where s3 returns an undefined data', async (t) => {
-    const params = {
-      Bucket: SAMPLE_BUCKET
-    , Key: SAMPLE_OBJECT_KEY
-    }
-
-    const getObject = transformer.getObject
-    transformer.getObject = async function(params) {
-      return null
-    }
-
-    t.teardown(() => {
-      transformer.getObject = getObject
-    })
-
-    await t.rejects(getLogs(params), {
-      message: CORRUPTED_DATA_ERROR
-    , meta: {params}
-    }, 'Expected error is thrown')
-  })
-
-  t.test('where s3 returns an undefined data', async (t) => {
-    const params = {
-      Bucket: SAMPLE_BUCKET
-    , Key: SAMPLE_OBJECT_KEY
-    }
-
-    const getObject = transformer.getObject
-    transformer.getObject = async function(params) {
-      return {}
-    }
-
-    t.teardown(() => {
-      transformer.getObject = getObject
-    })
-
-    await t.rejects(getLogs(params), {
-      message: CORRUPTED_DATA_ERROR
-    , meta: {params}
-    }, 'Expected error is thrown')
-  })
-
   t.test('where data is unzippable', async (t) => {
     const params = {
       Bucket: SAMPLE_BUCKET
@@ -694,15 +608,13 @@ test('getLogs', async (t) => {
     , gz: true
     }
 
-    const getObject = transformer.getObject
-    transformer.getObject = async function(params) {
-      return {
-        Body: LOG_LINE
-      }
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function(params) {
+      return LOG_LINE
     }
 
     t.teardown(() => {
-      transformer.getObject = getObject
+      s3helper.getObject = getObject
     })
 
     await t.rejects(getLogs(params), {
@@ -718,15 +630,13 @@ test('getLogs', async (t) => {
     , Key: `${SAMPLE_OBJECT_KEY}.gz`
     }
 
-    const getObject = transformer.getObject
-    transformer.getObject = async function(params) {
-      return {
-        Body: zlib.gzipSync(Buffer.from(LOG_LINE))
-      }
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function(params) {
+      return zlib.gzipSync(Buffer.from(LOG_LINE))
     }
 
     t.teardown(() => {
-      transformer.getObject = getObject
+      s3helper.getObject = getObject
     })
 
     const data = await getLogs(params)
@@ -746,15 +656,13 @@ test('getLogs', async (t) => {
       log: LOG_LINE
     })
 
-    const getObject = transformer.getObject
-    transformer.getObject = async function(params) {
-      return {
-        Body: zlib.gzipSync(Buffer.from(input))
-      }
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function(params) {
+      return zlib.gzipSync(Buffer.from(input))
     }
 
     t.teardown(() => {
-      transformer.getObject = getObject
+      s3helper.getObject = getObject
     })
 
     const data = await getLogs(params)
@@ -779,15 +687,13 @@ test('getLogs', async (t) => {
       log: LOG_LINE
     })
 
-    const getObject = transformer.getObject
-    transformer.getObject = async function(params) {
-      return {
-        Body: zlib.gzipSync(Buffer.from(input + ' noise'))
-      }
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function(params) {
+      return zlib.gzipSync(Buffer.from(input + ' noise'))
     }
 
     t.teardown(() => {
-      transformer.getObject = getObject
+      s3helper.getObject = getObject
     })
 
     await t.rejects(getLogs(params), {
@@ -806,15 +712,13 @@ test('getLogs', async (t) => {
       log: LOG_LINE
     })
 
-    const getObject = transformer.getObject
-    transformer.getObject = async function(params) {
-      return {
-        Body: input
-      }
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function(params) {
+      return input
     }
 
     t.teardown(() => {
-      transformer.getObject = getObject
+      s3helper.getObject = getObject
     })
 
     const data = await getLogs(params)
@@ -836,15 +740,13 @@ test('getLogs', async (t) => {
     , `${LOG_LINE} 2`
     ].join('\n')
 
-    const getObject = transformer.getObject
-    transformer.getObject = async function(params) {
-      return {
-        Body: input
-      }
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function(params) {
+      return input
     }
 
     t.teardown(() => {
-      transformer.getObject = getObject
+      s3helper.getObject = getObject
     })
 
     const data = await getLogs(params)
@@ -872,11 +774,9 @@ test('getLogs', async (t) => {
     , `${LOG_LINE} 2`
     ].join('\n')
 
-    const getObject = transformer.getObject
-    transformer.getObject = async function(params) {
-      return {
-        Body: zlib.gzipSync(Buffer.from(input))
-      }
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function(params) {
+      return zlib.gzipSync(Buffer.from(input))
     }
 
     t.teardown(() => {

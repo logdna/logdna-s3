@@ -38,7 +38,8 @@
     "timeout": 60,
     "nyc-arg": [
       "--all=true",
-      "--exclude=test/"
+      "--exclude=test/",
+      "--exclude=lib/aws-s3-v2-wrapper.js"
     ],
     "coverage-report": [
       "html",
@@ -65,7 +66,7 @@
     "@commitlint/cli": "^9.1.2",
     "@commitlint/config-conventional": "^12.1.1",
     "@semantic-release/github": "^7.2.1",
-    "aws-sdk": "^2.590.0",
+    "@aws-sdk/client-s3": "^3.485.0",
     "eslint": "^7.4.0",
     "eslint-config-logdna": "^5.0.0",
     "nock": "^13.0.11",

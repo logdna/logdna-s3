@@ -9,7 +9,7 @@ The integration with Amazon S3 relies on [AWS Lambda](https://docs.aws.amazon.co
  * Code entry type: `Upload a .ZIP file`
  * Upload our LogDNA Lambda function [.ZIP File](https://github.com/logdna/logdna-s3/releases/latest/download/logdna-s3.zip).
  * Handler: `index.handler`
- * Runtime: `Node.js.20.x`
+ * Minimum Runtime Version: `Node.js.20.x`
 
 ### Configuration
 #### General Configuration

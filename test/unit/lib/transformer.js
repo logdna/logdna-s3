@@ -13,12 +13,10 @@ const {
 
 /* eslint-disable */
 const INITIAL_GETLOGS_ERROR = 'Both Bucket and Key params must be provided'
-const CORRUPTED_DATA_ERROR = 'Corrupted data returned from the object'
 const JSON_PARSE_ERROR = 'Error in Parsing the JSON Data from the S3 Object'
 const META_EVENT_TIME = new Date(Date.now() - 1000)
 const LOG_EVENT_TIME = new Date()
 const LOG_LINE = 'test log'
-const S3_GETOBJECT_ERROR = 'Error in Getting the S3 Object'
 const SAMPLE_BUCKET = 'sampleBucket'
 const SAMPLE_OBJECT_KEY = 'test'
 const ZLIB_GUNZIP_ERROR = 'Error in Unzipping the S3 Object'

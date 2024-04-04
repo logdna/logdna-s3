@@ -38,8 +38,7 @@
     "timeout": 60,
     "nyc-arg": [
       "--all=true",
-      "--exclude=test/",
-      "--exclude=lib/aws-s3-v2-wrapper.js"
+      "--exclude=test/"
     ],
     "coverage-report": [
       "html",

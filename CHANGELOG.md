@@ -1,5 +1,12 @@
 ## Changelog
 
+## [2.1.3](https://github.com/logdna/logdna-s3/compare/v2.1.2...v2.1.3) (2024-04-05)
+
+
+### Bug Fixes
+
+* upagrade aws sdk (#36) [fd93a94](https://github.com/logdna/logdna-s3/commit/fd93a94c66586ac0a61c78e239ce5a101e0cbec9) - GitHub, closes: [#36](https://github.com/logdna/logdna-s3/issues/36)
+
 ## [2.1.2](https://github.com/logdna/logdna-s3/compare/v2.1.1...v2.1.2) (2023-11-16)
 
 

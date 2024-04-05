@@ -9,7 +9,7 @@ const {object} = require('@logdna/stdlib')
 const {buildLoggerURL} = require('../../lib/logger.js')
 const config = require('../../lib/config.js')
 const {handler} = require('../../index.js')
-const transformer = require('../../lib/transformer.js')
+const s3helper = require('../../lib/aws-s3-v2-wrapper.js')
 const {
   formatObjectKey
 , trimTags
@@ -56,14 +56,12 @@ test('test getting, parsing, and sending S3 event', async (t) => {
       log: LOG_LINE
     })
 
-    const getObject = transformer.getObject
-    transformer.getObject = async function({
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function({
       Bucket: BUCKET_NAME
     , Key: FILE_NAME
     }) {
-      return {
-        Body: input
-      }
+      return input
     }
 
     nock(buildLoggerURL(config))
@@ -99,7 +97,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
       .reply(200, responseText)
 
     t.teardown(() => {
-      transformer.getObject = getObject
+      s3helper.getObject = getObject
     })
 
     await handler(EVENT_DATA, null)
@@ -115,14 +113,12 @@ test('test getting, parsing, and sending S3 event', async (t) => {
       log: LOG_LINE
     })
 
-    const getObject = transformer.getObject
-    transformer.getObject = async function({
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function({
       Bucket: BUCKET_NAME
     , Key: FILE_NAME
     }) {
-      return {
-        Body: input
-      }
+      return input
     }
 
     nock(buildLoggerURL(config))
@@ -158,7 +154,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
       .reply(200, responseText)
 
     t.teardown(() => {
-      transformer.getObject = getObject
+      s3helper.getObject = getObject
     })
 
     await handler(EVENT_DATA, null)
@@ -175,14 +171,12 @@ test('test getting, parsing, and sending S3 event', async (t) => {
 
     object.set(EVENT_DATA, 'Records.0.s3.bucket.name', undefined)
     config.set('hostname', undefined)
-    const getObject = transformer.getObject
-    transformer.getObject = async function({
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function({
       Bucket: BUCKET_NAME
     , Key: FILE_NAME
     }) {
-      return {
-        Body: input
-      }
+      return input
     }
 
     nock(buildLoggerURL(config))
@@ -218,7 +212,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
       .reply(200, responseText)
 
     t.teardown(() => {
-      transformer.getObject = getObject
+      s3helper.getObject = getObject
     })
 
     await handler(EVENT_DATA, null)
@@ -234,14 +228,12 @@ test('test getting, parsing, and sending S3 event', async (t) => {
     })
 
     config.set('hostname', SAMPLE_HOSTNAME)
-    const getObject = transformer.getObject
-    transformer.getObject = async function({
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function({
       Bucket: BUCKET_NAME
     , Key: FILE_NAME
     }) {
-      return {
-        Body: input
-      }
+      return input
     }
 
     nock(buildLoggerURL(config))
@@ -277,7 +269,7 @@ test('test getting, parsing, and sending S3 event', async (t) => {
       .reply(200, responseText)
 
     t.teardown(() => {
-      transformer.getObject = getObject
+      s3helper.getObject = getObject
     })
 
     await handler(EVENT_DATA, null)

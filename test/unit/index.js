@@ -7,6 +7,7 @@ const {object} = require('@logdna/stdlib')
 const config = require('../../lib/config.js')
 const {handler} = require('../../index.js')
 const transformer = require('../../lib/transformer.js')
+const s3helper = require('../../lib/aws-s3-v2-wrapper.js')
 
 const BUCKET_NAME = 'random_name'
 const EMPTY_EVENT = {}
@@ -53,18 +54,16 @@ test('handler is the main method in lambda functions', async (t) => {
       log: LOG_LINE
     })
 
-    const getObject = transformer.getObject
-    transformer.getObject = async function({
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function({
       Bucket: BUCKET_NAME
     , Key: FILE_NAME
     }) {
-      return {
-        Body: input
-      }
+      return input
     }
 
     t.teardown(() => {
-      transformer.getObject = getObject
+      s3helper.getObject = getObject
     })
 
     await t.rejects(handler(EVENT_DATA, null), {
@@ -86,18 +85,16 @@ test('handler is the main method in lambda functions', async (t) => {
       log: LOG_LINE
     })
 
-    const getObject = transformer.getObject
-    transformer.getObject = async function({
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function({
       Bucket: BUCKET_NAME
     , Key: FILE_NAME
     }) {
-      return {
-        Body: input
-      }
+      return input
     }
 
     t.teardown(() => {
-      transformer.getObject = getObject
+      s3helper.getObject = getObject
     })
 
     await t.rejects(handler(EVENT_DATA, null), {
@@ -119,14 +116,12 @@ test('handler is the main method in lambda functions', async (t) => {
       log: LOG_LINE
     })
 
-    const getObject = transformer.getObject
-    transformer.getObject = async function({
+    const getObject = s3helper.getObject
+    s3helper.getObject = async function({
       Bucket: BUCKET_NAME
     , Key: FILE_NAME
     }) {
-      return {
-        Body: input
-      }
+      return input
     }
 
     t.teardown(() => {

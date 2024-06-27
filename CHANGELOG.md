@@ -1,5 +1,12 @@
 ## Changelog
 
+## [2.1.4](https://github.com/logdna/logdna-s3/compare/v2.1.3...v2.1.4) (2024-06-27)
+
+
+### Bug Fixes
+
+* make compatible with pipeline (#37) [6f6e152](https://github.com/logdna/logdna-s3/commit/6f6e152f4116708bb3994d6d3f7897821004bcfe) - GitHub, closes: [#37](https://github.com/logdna/logdna-s3/issues/37)
+
 ## [2.1.3](https://github.com/logdna/logdna-s3/compare/v2.1.2...v2.1.3) (2024-04-05)
 
 

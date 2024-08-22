@@ -13,7 +13,7 @@ The integration with Amazon S3 relies on [AWS Lambda](https://docs.aws.amazon.co
 
 ### Configuration
 #### General Configuration
-If the S3 Lambda is being used to stream from gzipped files:
+If this function is being used to stream from gzipped files:
 1. Set `Timeout` to, at least, `30 seconds`.
 2. Set `Memory` limit to, at least, `512 MB`.
 
